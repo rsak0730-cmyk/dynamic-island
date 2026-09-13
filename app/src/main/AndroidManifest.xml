@@ -2,7 +2,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.custom.dynamicisland">
 
-    <!-- System Overlay & Service Permissions -->
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
@@ -28,6 +27,16 @@
             android:name=".DynamicIslandService"
             android:exported="false"
             android:foregroundServiceType="specialUse" />
+
+        <!-- NEW: Notification Listener Service -->
+        <service
+            android:name=".IslandNotificationListener"
+            android:label="Dynamic Island Notifications"
+            android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.service.notification.NotificationListenerService" />
+            </intent-filter>
+        </service>
     </application>
 </manifest>
-
