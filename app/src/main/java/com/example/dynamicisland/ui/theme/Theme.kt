@@ -9,7 +9,9 @@ private val DarkColors = darkColorScheme()
 private val LightColors = lightColorScheme()
 
 @Composable
-fun AppTheme(content: @Composable () -> Unit) {
+fun AppTheme(
+    content: @Composable () -> Unit
+) {
     MaterialTheme(
         colorScheme = DarkColors,
         content = content
