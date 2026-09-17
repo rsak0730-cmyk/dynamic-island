@@ -2,7 +2,6 @@ package com.example.dynamicisland.ui
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -15,11 +14,12 @@ import androidx.compose.ui.unit.dp
 import com.example.dynamicisland.events.DynamicIslandEvent
 import com.example.dynamicisland.ui.components.IslandExpandedCard
 import com.example.dynamicisland.ui.components.IslandPill
+import com.example.dynamicisland.util.FormatUtils
 
 @Composable
 fun IslandScreen(event: DynamicIslandEvent, onDismiss: () -> Unit) {
     val expanded = true
-    val height = animateDpAsState(if (expanded) 120.dp else 54.dp, label = "h")
+    val height = animateDpAsState(if (expanded) 132.dp else 54.dp, label = "height")
     Surface(
         modifier = Modifier
             .padding(top = 24.dp)
@@ -27,11 +27,11 @@ fun IslandScreen(event: DynamicIslandEvent, onDismiss: () -> Unit) {
             .height(height.value)
             .clickable { onDismiss() },
         shape = RoundedCornerShape(32.dp),
-        color = Color(0xFF0B0B0F),
+        color = Color(0xFF09090D),
         tonalElevation = 6.dp
     ) {
         Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            AnimatedContent(targetState = event, label = "island") { e ->
+            AnimatedContent(targetState = event, label = "dynamic_island") { e ->
                 when (e) {
                     is DynamicIslandEvent.Notification -> IslandExpandedCard(
                         title = e.title ?: "Notification",
@@ -47,15 +47,23 @@ fun IslandScreen(event: DynamicIslandEvent, onDismiss: () -> Unit) {
                     )
                     is DynamicIslandEvent.Timer -> IslandExpandedCard(
                         title = "Timer",
-                        subtitle = "${e.remainingMs / 1000}s left"
+                        subtitle = FormatUtils.formatMs(e.remainingMs)
+                    )
+                    is DynamicIslandEvent.Stopwatch -> IslandExpandedCard(
+                        title = "Stopwatch",
+                        subtitle = FormatUtils.formatMs(e.elapsedMs)
                     )
                     is DynamicIslandEvent.Call -> IslandExpandedCard(
                         title = e.name ?: "Call",
-                        subtitle = if (e.active) "Active call" else "Calling"
+                        subtitle = if (e.active) "Active call" else "Incoming call"
+                    )
+                    is DynamicIslandEvent.Bluetooth -> IslandExpandedCard(
+                        title = e.label,
+                        subtitle = if (e.connected) "Connected" else "Disconnected"
                     )
                     is DynamicIslandEvent.Custom -> IslandExpandedCard(
                         title = e.label,
-                        subtitle = "Custom event"
+                        subtitle = e.subtitle ?: "Custom event"
                     )
                 }
             }
