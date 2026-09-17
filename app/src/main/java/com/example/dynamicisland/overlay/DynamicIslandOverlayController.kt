@@ -17,17 +17,24 @@ class DynamicIslandOverlayController(
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
     private val windowManager = IslandWindowManager(context)
     private var started = false
+    private var autoDismissJob: Job? = null
 
     fun start() {
         if (started) return
         started = true
+
         scope.launch {
             eventBus.current.collectLatest { event ->
+                autoDismissJob?.cancel()
+
                 if (event != null) {
                     windowManager.show(event, onDismiss = { eventBus.clear() })
-                    launch {
+
+                    autoDismissJob = launch {
                         val delayMs = settingsRepository.settings
-                        delay(250)
+                        // We do not collect settings here to avoid keeping the overlay hot.
+                        delay(3500L)
+                        eventBus.clear()
                     }
                 } else {
                     windowManager.remove()
@@ -37,6 +44,7 @@ class DynamicIslandOverlayController(
     }
 
     fun stop() {
+        autoDismissJob?.cancel()
         windowManager.remove()
         started = false
     }
