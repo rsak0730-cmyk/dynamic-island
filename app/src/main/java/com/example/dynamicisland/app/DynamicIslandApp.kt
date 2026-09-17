@@ -4,6 +4,7 @@ import android.app.Application
 import com.example.dynamicisland.data.SettingsRepository
 import com.example.dynamicisland.events.DynamicIslandEventBus
 import com.example.dynamicisland.overlay.DynamicIslandOverlayController
+import com.example.dynamicisland.timer.TimerEngine
 
 class DynamicIslandApp : Application() {
     lateinit var settingsRepository: SettingsRepository
@@ -15,10 +16,15 @@ class DynamicIslandApp : Application() {
     lateinit var overlayController: DynamicIslandOverlayController
         private set
 
+    lateinit var timerEngine: TimerEngine
+        private set
+
     override fun onCreate() {
         super.onCreate()
         settingsRepository = SettingsRepository(this)
         eventBus = DynamicIslandEventBus()
-        overlayController = DynamicIslandOverlayController(this, settingsRepository, eventBus)
+        timerEngine = TimerEngine()
+        overlayController = DynamicIslandOverlayController(this, settingsRepository, eventBus, timerEngine)
+        overlayController.start()
     }
 }
