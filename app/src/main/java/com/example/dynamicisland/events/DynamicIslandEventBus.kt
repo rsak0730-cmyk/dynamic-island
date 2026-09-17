@@ -10,10 +10,16 @@ class DynamicIslandEventBus {
 
     fun post(event: DynamicIslandEvent) {
         val cur = _current.value
-        if (cur == null || event.priority >= cur.priority) _current.value = event
+        if (cur == null || event.priority >= cur.priority) {
+            _current.value = event
+        }
     }
 
     fun clear() {
         _current.value = null
+    }
+
+    fun replace(event: DynamicIslandEvent?) {
+        _current.value = event
     }
 }
