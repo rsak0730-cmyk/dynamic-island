@@ -5,7 +5,7 @@ import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.*
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -13,13 +13,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.example.dynamicisland.events.DynamicIslandEvent
 import com.example.dynamicisland.ui.components.IslandExpandedCard
-import com.example.dynamicisland.ui.components.IslandPill
 import com.example.dynamicisland.util.FormatUtils
 
 @Composable
 fun IslandScreen(event: DynamicIslandEvent, onDismiss: () -> Unit) {
-    val expanded = true
-    val height = animateDpAsState(if (expanded) 132.dp else 54.dp, label = "height")
+    val height = animateDpAsState(targetValue = 132.dp, label = "height")
+
     Surface(
         modifier = Modifier
             .padding(top = 24.dp)
