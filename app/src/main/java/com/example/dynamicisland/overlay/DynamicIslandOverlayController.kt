@@ -2,19 +2,19 @@ package com.example.dynamicisland.overlay
 
 import android.content.Context
 import com.example.dynamicisland.data.SettingsRepository
+import com.example.dynamicisland.events.DynamicIslandEvent
 import com.example.dynamicisland.events.DynamicIslandEventBus
-import com.example.dynamicisland.ui.IslandScreen
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.launch
+import com.example.dynamicisland.timer.TimerEngine
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.collectLatest
 
 class DynamicIslandOverlayController(
     private val context: Context,
     private val settingsRepository: SettingsRepository,
-    private val eventBus: DynamicIslandEventBus
+    private val eventBus: DynamicIslandEventBus,
+    private val timerEngine: TimerEngine
 ) {
-    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
     private val windowManager = IslandWindowManager(context)
     private var started = false
 
@@ -22,10 +22,12 @@ class DynamicIslandOverlayController(
         if (started) return
         started = true
         scope.launch {
-            eventBus.current.collect { event ->
+            eventBus.current.collectLatest { event ->
                 if (event != null) {
-                    windowManager.show {
-                        IslandScreen(event = event, onDismiss = { eventBus.clear() })
+                    windowManager.show(event, onDismiss = { eventBus.clear() })
+                    launch {
+                        val delayMs = settingsRepository.settings
+                        delay(250)
                     }
                 } else {
                     windowManager.remove()
@@ -37,5 +39,13 @@ class DynamicIslandOverlayController(
     fun stop() {
         windowManager.remove()
         started = false
+    }
+
+    fun post(event: DynamicIslandEvent) {
+        eventBus.post(event)
+    }
+
+    fun clear() {
+        eventBus.clear()
     }
 }
