@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.map
 private val Context.dataStore by preferencesDataStore("dynamic_island_settings")
 
 class SettingsRepository(private val context: Context) {
+
     private object Keys {
         val ENABLED = booleanPreferencesKey("enabled")
         val AUTO_COLLAPSE = longPreferencesKey("auto_collapse")
@@ -28,6 +29,7 @@ class SettingsRepository(private val context: Context) {
         val CALLS = booleanPreferencesKey("calls")
         val CHARGING = booleanPreferencesKey("charging")
         val TIMER = booleanPreferencesKey("timer")
+        val STOPWATCH = booleanPreferencesKey("stopwatch")
         val BLUETOOTH = booleanPreferencesKey("bluetooth")
     }
 
@@ -40,8 +42,8 @@ class SettingsRepository(private val context: Context) {
             accentColor = p[Keys.ACCENT_COLOR] ?: 0xFFFFFFFF,
             widthDp = p[Keys.WIDTH] ?: 180,
             heightDp = p[Keys.HEIGHT] ?: 54,
-            expandedWidthDp = p[Keys.EXPANDED_WIDTH] ?: 320,
-            expandedHeightDp = p[Keys.EXPANDED_HEIGHT] ?: 120,
+            expandedWidthDp = p[Keys.EXPANDED_WIDTH] ?: 340,
+            expandedHeightDp = p[Keys.EXPANDED_HEIGHT] ?: 130,
             cornerRadiusDp = p[Keys.RADIUS] ?: 28,
             animationMs = p[Keys.ANIMATION] ?: 280,
             showNotificationText = p[Keys.SHOW_TEXT] ?: true,
@@ -51,6 +53,7 @@ class SettingsRepository(private val context: Context) {
             callsEnabled = p[Keys.CALLS] ?: true,
             chargingEnabled = p[Keys.CHARGING] ?: true,
             timerEnabled = p[Keys.TIMER] ?: true,
+            stopwatchEnabled = p[Keys.STOPWATCH] ?: true,
             bluetoothEnabled = p[Keys.BLUETOOTH] ?: true
         )
     }
