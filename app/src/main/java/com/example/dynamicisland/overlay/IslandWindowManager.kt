@@ -8,6 +8,7 @@ import android.view.WindowManager
 import androidx.compose.ui.platform.ComposeView
 import com.example.dynamicisland.events.DynamicIslandEvent
 import com.example.dynamicisland.ui.IslandScreen
+import androidx.compose.ui.platform.ViewCompositionStrategy
 
 class IslandWindowManager(private val context: Context) {
     private val wm = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
@@ -15,15 +16,22 @@ class IslandWindowManager(private val context: Context) {
 
     fun show(event: DynamicIslandEvent, onDismiss: () -> Unit) {
         if (view != null) return
+
         val composeView = ComposeView(context).apply {
-            setContent { IslandScreen(event = event, onDismiss = onDismiss) }
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnDetachedFromWindow)
+            setContent {
+                IslandScreen(event = event, onDismiss = onDismiss)
+            }
         }
+
         val params = WindowManager.LayoutParams(
             WindowManager.LayoutParams.WRAP_CONTENT,
             WindowManager.LayoutParams.WRAP_CONTENT,
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
-            else WindowManager.LayoutParams.TYPE_PHONE,
+            } else {
+                WindowManager.LayoutParams.TYPE_PHONE
+            },
             WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
                 WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
                 WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
@@ -32,13 +40,17 @@ class IslandWindowManager(private val context: Context) {
             gravity = Gravity.TOP or Gravity.CENTER_HORIZONTAL
             y = 0
         }
+
         view = composeView
         wm.addView(composeView, params)
     }
 
     fun remove() {
         view?.let {
-            try { wm.removeView(it) } catch (_: Exception) {}
+            try {
+                wm.removeView(it)
+            } catch (_: Exception) {
+            }
         }
         view = null
     }
