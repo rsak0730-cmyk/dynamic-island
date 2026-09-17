@@ -5,17 +5,19 @@ import android.graphics.PixelFormat
 import android.os.Build
 import android.view.Gravity
 import android.view.WindowManager
-import android.widget.FrameLayout
 import androidx.compose.ui.platform.ComposeView
+import com.example.dynamicisland.events.DynamicIslandEvent
 import com.example.dynamicisland.ui.IslandScreen
 
 class IslandWindowManager(private val context: Context) {
     private val wm = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
     private var view: ComposeView? = null
 
-    fun show(content: @androidx.compose.runtime.Composable () -> Unit) {
+    fun show(event: DynamicIslandEvent, onDismiss: () -> Unit) {
         if (view != null) return
-        val composeView = ComposeView(context).apply { setContent { content() } }
+        val composeView = ComposeView(context).apply {
+            setContent { IslandScreen(event = event, onDismiss = onDismiss) }
+        }
         val params = WindowManager.LayoutParams(
             WindowManager.LayoutParams.WRAP_CONTENT,
             WindowManager.LayoutParams.WRAP_CONTENT,
@@ -23,8 +25,8 @@ class IslandWindowManager(private val context: Context) {
                 WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
             else WindowManager.LayoutParams.TYPE_PHONE,
             WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
-                    WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
-                    WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+                WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
+                WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
             PixelFormat.TRANSLUCENT
         ).apply {
             gravity = Gravity.TOP or Gravity.CENTER_HORIZONTAL
