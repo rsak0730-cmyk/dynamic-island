@@ -1,10 +1,9 @@
 package com.example.dynamicisland.timer
 
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.*
-import kotlin.time.Duration.Companion.seconds
 
 class TimerEngine {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
@@ -17,7 +16,7 @@ class TimerEngine {
         _remaining.value = totalMs
         job = scope.launch {
             var left = totalMs
-            while (left > 0) {
+            while (left > 0 && isActive) {
                 delay(1000)
                 left -= 1000
                 _remaining.value = left.coerceAtLeast(0)
